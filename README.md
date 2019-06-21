@@ -20,21 +20,25 @@ Read [my medium article](https://medium.com/@ushakovhq/dialogflow-over-e-mail-85
 
 The picture doesn't face the reality, but gives you a good explanation of how it all works together
 
-First we have the E-Mail client (which is installed on your machine), which you use to send E-Mail
+First we have the E-Mail client (which is installed on your machine), which you use to send E-Mails
 
 Then, we have a Mailserver (SMTP, eg. Postfix), which we use as Ingress/Egress
 
-Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from IMAP-Server and forwards them to desired Dialogflow Agent to process them and send the response
+Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the IMAP-Server and forwards them to desired Dialogflow Agent to process them and send the response
+
+### Drawbacks
+
+- Only English is supported at the moment, but if you find a fast and inexpensive language detecting API, i would be happy to implement it
 
 ### Requirements
 
-- Agent, that is connected to Dialogflow Gateway (see a guide [here](https://medium.com/@ushakovhq/dialogflow-gateway-installation-8f3c6247ef82))
+- Agent, that is connected to Dialogflow Gateway ([see a guide](https://medium.com/@ushakovhq/dialogflow-gateway-installation-8f3c6247ef82))
 - SMTP and IMAP server of your choice. I prefer [docker-mailserver](https://github.com/tomav/docker-mailserver). You really don't want to mess with dockerizing 20yr old software on your own
 - Domain and experience with editing DNS
 
 ### Setup
 
-1. Install SMTP and IMAP Server on your machine and make sure it is running
+1. Install SMTP and IMAP Server on your machine and make sure it is working correctly
 2. Create new user, which will recieve E-Mails for your agent
 3. Assign alias: your-google-cloud-project-id@yourdomain.com or @yourdomain.com (if you have multiple Agents) to the user
 4. Add MX record pointing to your machine
@@ -89,17 +93,17 @@ spec:
 
 ### Installation (manual)
 
-If you want to install the code manually, follow these instructions:
+If you want to install the code manually, follow the instructions:
 
 1. Make sure your Mailserver is running
-2. Clone the repository
+2. Clone this repository
 3. Install Python and cron
 4. Define the environment variables:
     - INBOX_USER=your-user
     - INBOX_PASSWORD=your-user-password
     - INBOX_HOST=your-mailserver-host
     - GATEWAY=https://cloud.ushakov.co
-5. Send E-Mail to your Agent and run the script, to verify it works
+5. Send E-Mail to your Agent and run the `inbox.py` script with Python, to verify it works
 6. Make a cronjob to run the script automatically
 
 Done!
