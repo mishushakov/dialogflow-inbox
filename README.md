@@ -29,6 +29,8 @@ Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the I
 ### Drawbacks
 
 - Only English is supported at the moment, but if you find a fast and inexpensive language detecting API, i would be happy to implement it
+- No HTML parsing
+- No component rendering (only text is sent)
 
 ### Requirements
 
@@ -83,11 +85,13 @@ spec:
               - name: INBOX_USER
                 value: <your-user>
               - name: INBOX_PASSWORD
-                value: <your-password>
+                value: <your-user-password>
           restartPolicy: Never
           imagePullSecrets:
             - name: ushakovhq
 ```
+
+Ps. obviously it's a good idea to save your environment in Secrets
 
 4. Run `kubectl apply`
 
