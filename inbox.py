@@ -10,6 +10,7 @@ import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import parseaddr
+from langdetect import detect
 
 # Retrieve environment variables
 username = os.environ['INBOX_USER']
@@ -53,7 +54,7 @@ for mail_id in data[0].split():
         'queryInput': {
             'text': {
                 'text': parsed_email_body,
-                'languageCode': 'en'
+                'languageCode': detect(parsed_email_body)
             }
         }
     }
@@ -61,7 +62,7 @@ for mail_id in data[0].split():
     # Make the request
     baseurl = agent_id + '.gateway.dialogflow.cloud.ushakov.co'
     agent = requests.get(gateway, headers={'Host': baseurl})
-    r = requests.post(gateway + '/' + parsed_email_from + '?format=true', headers={'Host': baseurl}, json=req)
+    r = requests.post(gateway + '/' + parsed_email_from, headers={'Host': baseurl}, json=req)
     if r.status_code == 200:
         # Make new E-Mail for the response
         message = MIMEMultipart()
@@ -73,16 +74,28 @@ for mail_id in data[0].split():
         message['Subject'] = parsed_email['Subject']
 
         # Attach the components
-        for component in r.json()['queryResult']['fulfillmentMessages']:
-            if component['name'] == 'DEFAULT':
-                message.attach(MIMEText(component['content'], 'plain'))
-            elif component['name'] == 'SIMPLE_RESPONSE':
-                message.attach(MIMEText(component['content']['textToSpeech'], 'plain'))
+        result = r.json()['queryResult']
+        if 'fulfillmentMessages' in result:
+            for component in result['fulfillmentMessages']:
+                if 'text' in component:
+                    message.attach(MIMEText(component['text']['text'][0], 'plain'))
+                elif 'simpleResponses' in component:
+                    message.attach(MIMEText(component['simpleResponses']['simpleResponses'][0]['textToSpeech'], 'plain'))
+
+        if 'webhookPayload' in result:
+            if 'google' in result['webhookPayload']:
+                for component in result['webhookPayload']['google']['richResponse']['items']:
+                    if 'simpleResponse' in component:
+                        message.attach(MIMEText(component['simpleResponse']['textToSpeech'], 'plain'))
 
         message.attach(MIMEText('<br><br>Powered by <a href="https://dialogflow.cloud.ushakov.co">Dialogflow Gateway</a>', 'html'))
 
         # Connect to SMTP and send the E-Mail
-        session = smtplib.SMTP(host)
+        session = smtplib.SMTP(host, 587)
+        session.ehlo()
+        session.starttls()
+        session.ehlo()
+
         session.login(username, password)
         session.sendmail(parsed_email['To'], parsed_email['From'], message.as_string())
 

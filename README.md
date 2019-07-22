@@ -2,7 +2,7 @@
 
 ![](https://i.imgur.com/8yoLPGI.png)
 
-Dialogflow Inbox operates your Dialogflow Agent inside a mail server
+Dialogflow Inbox operates your Dialogflow Agent inside a mail server. It can automatically detect the languages and supports Webhooks (Dialogflow or Actions on Google)
 
 This Integration is already included in [Dialogflow Gateway](https://dialogflow.cloud.ushakov.co) - Platform for building Dialogflow Integrations
 
@@ -28,7 +28,6 @@ Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the I
 
 ### Drawbacks
 
-- Only English is supported at the moment, but if you find a fast and inexpensive language detecting API, i would be happy to implement it
 - No HTML parsing
 - No component rendering (only text is sent)
 
@@ -71,6 +70,7 @@ spec:
   schedule: "* * * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
   jobTemplate:
     spec:
       template:
