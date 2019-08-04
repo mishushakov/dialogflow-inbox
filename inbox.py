@@ -51,6 +51,7 @@ for mail_id in data[0].split():
     # Build Dialogflow Gateway Request
     agent_id = parsed_email_to.split('@')[0]
     req = {
+        'session': parsed_email_from,
         'queryInput': {
             'text': {
                 'text': parsed_email_body,
@@ -62,7 +63,7 @@ for mail_id in data[0].split():
     # Make the request
     baseurl = agent_id + '.gateway.dialogflow.cloud.ushakov.co'
     agent = requests.get(gateway, headers={'Host': baseurl})
-    r = requests.post(gateway + '/' + parsed_email_from, headers={'Host': baseurl}, json=req)
+    r = requests.post(gateway, headers={'Host': baseurl}, json=req)
     if r.status_code == 200:
         # Make new E-Mail for the response
         message = MIMEMultipart()

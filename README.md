@@ -4,13 +4,13 @@
 
 Dialogflow Inbox operates your Dialogflow Agent inside a mail server. It can automatically detect the languages and supports Webhooks (Dialogflow or Actions on Google)
 
-This Integration is already included in [Dialogflow Gateway](https://dialogflow.cloud.ushakov.co) - Platform for building Dialogflow Integrations
+This Integration is already included in [Dialogflow Gateway Hosted by Ushakov](https://dialogflow.cloud.ushakov.co) - Platform for building Dialogflow Integrations
 
 ## Getting Started
 
 ### Hosted Version
 
-You may not need to host it by yourself, since [Dialogflow Gateway](https://dialogflow.cloud.ushakov.co) already ships with the Integration for free
+You may not need to host it by yourself, since [Dialogflow Gateway Hosted by Ushakov](https://dialogflow.cloud.ushakov.co) already ships with the Integration for free
 
 Read [my medium article](https://medium.com/@ushakovhq/dialogflow-over-e-mail-85bd1b3dd8d6) to see how to enable it
 
