@@ -18,13 +18,11 @@ Read [my medium article](https://medium.com/@ushakovhq/dialogflow-over-e-mail-85
 
 ![](https://i.imgur.com/LliWtRV.png)
 
-The picture doesn't face the reality, but gives you a good explanation of how it all works together
-
 First we have the E-Mail client (which is installed on your machine), which you use to send E-Mails
 
 Then, we have a Mailserver (SMTP, eg. Postfix), which we use as Ingress/Egress
 
-Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the IMAP-Server and forwards them to desired Dialogflow Agent to process them and send the response
+Finally, we have a cronjob (`inbox.py`), which retrieves unread E-Mails from the IMAP-Server and forwards them to desired Dialogflow Agent to process and respond
 
 ### Drawbacks
 
@@ -33,7 +31,7 @@ Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the I
 
 ### Requirements
 
-- Agent, that is connected to Dialogflow Gateway ([see a guide](https://medium.com/@ushakovhq/dialogflow-gateway-installation-8f3c6247ef82))
+- Agent, that is connected to Dialogflow Gateway ([see a guide](https://github.com/mishushakov/dialogflow-gateway-docs/tree/master/hosted))
 - SMTP and IMAP server of your choice. I prefer [docker-mailserver](https://github.com/tomav/docker-mailserver). You really don't want to mess with dockerizing 20yr old software on your own
 - Domain and experience with editing DNS
 
@@ -44,22 +42,10 @@ Finally, we have a cronjob (`inbox.py`), which fetches unread E-Mails from the I
 3. Assign alias: your-google-cloud-project-id@yourdomain.com or @yourdomain.com (if you have multiple Agents) to the user
 4. Add MX record pointing to your machine
 
-### Installation (using Kubernetes)
+### Installation (Kubernetes)
 
 1. Make sure your Mailserver is running
-2. Create Secret with my registry credentials (read-only):
-
-```yaml
-apiVersion: v1
-data:
-  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJyZWdpc3RyeS5naXRsYWIuY29tIjogewoJCQkiYXV0aCI6ICJaMmwwYkdGaUsyUmxjR3h2ZVMxMGIydGxiaTAzTlRnNE5EcHZURWhTTTJKS2MzcEtkbXMzVTNGNlpUaG5PQT09IgoJCX0KCX0sCgkiSHR0cEhlYWRlcnMiOiB7CgkJIlVzZXItQWdlbnQiOiAiRG9ja2VyLUNsaWVudC8xOC4wOS4wIChsaW51eCkiCgl9Cn0=
-kind: Secret
-metadata:
-  name: ushakovhq
-type: kubernetes.io/dockerconfigjson
-```
-
-3. Create a CronJob with my container image:
+2. Create a CronJob with `dialogflow-inbox` container image:
 
 ```yaml
 apiVersion: batch/v1beta1
@@ -77,7 +63,7 @@ spec:
         spec:
           containers:
           - name: dialogflow-inbox
-            image: registry.gitlab.com/ushakovhq/dialogflow/inbox
+            image: docker.pkg.github.com/mishushakov/dialogflow-inbox/dist:latest
             imagePullPolicy: IfNotPresent
             env:
               - name: INBOX_HOST
@@ -87,20 +73,18 @@ spec:
               - name: INBOX_PASSWORD
                 value: <your-user-password>
           restartPolicy: Never
-          imagePullSecrets:
-            - name: ushakovhq
 ```
 
 Ps. obviously it's a good idea to save your environment in Secrets
 
-4. Run `kubectl apply`
+3. Run `kubectl apply`
 
 ### Installation (manual)
 
 If you want to install the code manually, follow the instructions:
 
 1. Make sure your Mailserver is running
-2. Clone this repository
+2. Clone the repository
 3. Install Python and cron
 4. Define the environment variables:
     - INBOX_USER=your-user
