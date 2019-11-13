@@ -7,8 +7,8 @@ jobs:
     - uses: actions/checkout@master
     - name: Build the Docker image
       env:
-        CONTAINER_IMAGE: docker.pkg.github.com/${{github.repository}}/dist:${{github.sha}}
-        CONTAINER_IMAGE_LATEST: docker.pkg.github.com/${{github.repository}}/dist:latest
+        CONTAINER_IMAGE: docker.pkg.github.com/${{github.repository}}/${{secrets.REPO}}:${{github.sha}}
+        CONTAINER_IMAGE_LATEST: docker.pkg.github.com/${{github.repository}}/${{secrets.REPO}}:latest
       run: |
         docker login -u $GITHUB_ACTOR -p ${{secrets.GITHUB_TOKEN}} docker.pkg.github.com
         docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_LATEST .

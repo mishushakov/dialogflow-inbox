@@ -63,7 +63,7 @@ spec:
         spec:
           containers:
           - name: dialogflow-inbox
-            image: docker.pkg.github.com/mishushakov/dialogflow-inbox/dist:latest
+            image: docker.pkg.github.com/mishushakov/dialogflow-inbox/dialogflow-inbox:latest
             imagePullPolicy: IfNotPresent
             env:
               - name: INBOX_HOST
