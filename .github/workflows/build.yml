@@ -1,11 +1,14 @@
-name: Docker Build
-on: [push]
+name: Build docker image
+on:
+  push:
+    branches:
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Build the Docker image
+    - name: Build
       env:
         CONTAINER_IMAGE: docker.pkg.github.com/${{github.repository}}/${{secrets.REPO}}:${{github.sha}}
         CONTAINER_IMAGE_LATEST: docker.pkg.github.com/${{github.repository}}/${{secrets.REPO}}:latest
