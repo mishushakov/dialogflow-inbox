@@ -1,2 +1,3 @@
 requests
 langdetect
+email_reply_parser

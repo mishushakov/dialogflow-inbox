@@ -1,0 +1,27 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: dialogflow-inbox
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dialogflow-inbox
+            image: docker.pkg.github.com/mishushakov/dialogflow-inbox/dialogflow-inbox:latest
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: INBOX_HOST
+                value: <your-mailserver-host>
+              - name: INBOX_USER
+                value: <your-user>
+              - name: INBOX_PASSWORD
+                value: <your-user-password>
+              - name: GATEWAY
+                value: https://cloud.ushakov.co
+          restartPolicy: Never

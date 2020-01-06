@@ -3,14 +3,15 @@
 import os
 import smtplib
 import imaplib
-import email
 import requests
 import logging
 
+from email import message_from_string
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.utils import parseaddr
+from email.utils import parseaddr, make_msgid
 from langdetect import detect
+from email_reply_parser import EmailReplyParser
 
 # Retrieve environment variables
 username = os.environ['INBOX_USER']
@@ -24,22 +25,21 @@ server.login(username, password)
 server.select('inbox')
 mails, data = server.uid('search', None, 'UNSEEN')
 
-# Enable Debugging
-logging.getLogger().setLevel(logging.DEBUG)
-
 for mail_id in data[0].split():
     # Fetch each unread E-Mail
     status, data = server.uid('fetch', mail_id, '(RFC822)')
     raw_email = data[0][1].decode('utf-8')
 
     # Parse E-Mail
-    parsed_email = email.message_from_string(raw_email)
+    parsed_email = message_from_string(raw_email)
     parsed_email_from = parseaddr(parsed_email['From'])[1]
     parsed_email_to = parseaddr(parsed_email['To'])[1]
     parsed_email_body = ''
     for part in parsed_email.walk():
         if part.get_content_type() == 'text/plain':
             parsed_email_body += part.get_payload()
+
+    parsed_email_body = EmailReplyParser.parse_reply(parsed_email_body)
 
     # Log E-Mail
     logging.info('Recieved new E-Mail')
@@ -67,7 +67,7 @@ for mail_id in data[0].split():
     if r.status_code == 200:
         # Make new E-Mail for the response
         message = MIMEMultipart()
-        message['Message-ID'] = email.utils.make_msgid()
+        message['Message-ID'] = make_msgid()
         message['In-Reply-To'] = parsed_email['Message-ID']
         message['References'] = parsed_email['Message-ID']
         message['From'] = (agent.json()['displayName'] + ' <' + parsed_email_to + '>') or parsed_email['To']
@@ -99,6 +99,7 @@ for mail_id in data[0].split():
 
         session.login(username, password)
         session.sendmail(parsed_email['To'], parsed_email['From'], message.as_string())
+        session.quit()
 
         # Log response status
         logging.info('E-Mail response sent to ' + parsed_email_from)
