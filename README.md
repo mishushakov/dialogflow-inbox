@@ -2,7 +2,7 @@
 
 ![](https://i.imgur.com/8yoLPGI.png)
 
-Dialogflow Inbox operates a Dialogflow Agent inside a mail server
+Dialogflow Inbox operates Dialogflow Agents inside a mail server
 
 ## Schema
 
@@ -17,13 +17,13 @@ Dialogflow Inbox operates a Dialogflow Agent inside a mail server
 
 ## Setup
 
-1. Connect a Agent to Dialogflow Gateway Implementation ([here](https://github.com/mishushakov/dialogflow-gateway-docs))
-2. Install a SMTP and IMAP server on your machine, i recommend [docker-mailserver](https://github.com/tomav/docker-mailserver)
-3. Point a DNS MX record to the SMTP and IMAP server
+1. Connect Agents to Dialogflow Gateway implementation ([more here](https://github.com/mishushakov/dialogflow-gateway-docs))
+2. Install SMTP and IMAP server on your machine, i recommend [docker-mailserver](https://github.com/tomav/docker-mailserver)
+3. Point DNS MX record to the SMTP and IMAP server
 4. Create a user, which will recieve E-Mails for your agent
-5. Assign alias: your-google-cloud-project-id@yourdomain.com or @yourdomain.com (if you have multiple Agents) to this user
+5. Assign alias: your-google-cloud-project-id@yourdomain.com or *@yourdomain.com (if you have multiple Agents) to the user
 
-# Configuration
+## Configuration
 
 | Environment Variable | Description                       | Value                    |
 |----------------------|-----------------------------------|--------------------------|
@@ -38,7 +38,7 @@ See [k8s](k8s) directory
 
 ## Installation (manual)
 
-1. Confirm, that your Mailserver is operating correctly
+1. Confirm your Mailserver is operating correctly
 2. Clone the repository
 3. Install Python and cron
 4. Configure the environment variables
