@@ -17,6 +17,7 @@ from email_reply_parser import EmailReplyParser
 username = os.environ['INBOX_USER']
 password = os.environ['INBOX_PASSWORD']
 host = os.environ['INBOX_HOST']
+fallback_lang = os.environ['INBOX_FALLBACK_LANGUAGE']
 gateway = os.environ['GATEWAY']
 
 # Connect to IMAP and fetch unread messages
@@ -40,6 +41,9 @@ for mail_id in data[0].split():
             parsed_email_body += part.get_payload()
 
     parsed_email_body = EmailReplyParser.parse_reply(parsed_email_body)
+    parsed_email_language = fallback_lang
+    try:
+        parsed_email_language = detect(parsed_email_body)
 
     # Log E-Mail
     logging.info('Recieved new E-Mail')
@@ -55,7 +59,17 @@ for mail_id in data[0].split():
         'queryInput': {
             'text': {
                 'text': parsed_email_body,
-                'languageCode': detect(parsed_email_body)
+                'languageCode': parsed_email_language
+            }
+        },
+        'queryParams': {
+            'payload': {
+                'email': {
+                    'from': parsed_email_from,
+                    'to': parsed_email_to,
+                    'subject': parsed_email['Subject'],
+                    'body': parsed_email_body
+                }
             }
         }
     }

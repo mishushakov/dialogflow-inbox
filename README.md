@@ -43,9 +43,10 @@ See [k8s](k8s) for examples
 
 ### Configuration
 
-| Environment Variable | Description                       | Value                    |
-|----------------------|-----------------------------------|--------------------------|
-| INBOX_USER           | E-mail user                       | -                        |
-| INBOX_PASSWORD       | E-mail user's password            | -                        |
-| INBOX_HOST           | SMTP and IMAP server hostname     | -                        |
-| GATEWAY              | Dialogflow Gateway Implementation | https://cloud.ushakov.co |
+| Environment Variable | Description                                      | Value                    |
+|----------------------|--------------------------------------------------|--------------------------|
+| INBOX_USER           | E-mail user                                      | -                        |
+| INBOX_PASSWORD       | E-mail user's password                           | -                        |
+| INBOX_HOST           | SMTP and IMAP server hostname                    | -                        |
+| INBOX_FALLBACK_LANG  | Fallback language if language detection fails    | en                       |
+| GATEWAY              | Dialogflow Gateway Implementation                | https://cloud.ushakov.co |
