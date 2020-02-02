@@ -17,7 +17,7 @@ from email_reply_parser import EmailReplyParser
 username = os.environ['INBOX_USER']
 password = os.environ['INBOX_PASSWORD']
 host = os.environ['INBOX_HOST']
-fallback_lang = os.environ['INBOX_FALLBACK_LANG']
+fallback_lang = os.environ['FALLBACK_LANG']
 gateway = os.environ['GATEWAY']
 
 # Connect to IMAP and fetch unread messages

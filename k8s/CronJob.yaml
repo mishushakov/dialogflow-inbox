@@ -22,7 +22,7 @@ spec:
                 value: <your-user>
               - name: INBOX_PASSWORD
                 value: <your-user-password>
-              - name: INBOX_FALLBACK_LANG
+              - name: FALLBACK_LANG
                 value: en
               - name: GATEWAY
                 value: https://cloud.ushakov.co
