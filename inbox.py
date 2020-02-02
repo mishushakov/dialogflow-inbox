@@ -44,6 +44,8 @@ for mail_id in data[0].split():
     parsed_email_lang = fallback_lang
     try:
         parsed_email_lang = detect(parsed_email_body)
+    except:
+        pass
 
     # Log E-Mail
     logging.info('Recieved new E-Mail')
