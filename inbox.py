@@ -41,9 +41,9 @@ for mail_id in data[0].split():
             parsed_email_body += part.get_payload()
 
     parsed_email_body = EmailReplyParser.parse_reply(parsed_email_body)
-    parsed_email_language = fallback_lang
+    parsed_email_lang = fallback_lang
     try:
-        parsed_email_language = detect(parsed_email_body)
+        parsed_email_lang = detect(parsed_email_body)
 
     # Log E-Mail
     logging.info('Recieved new E-Mail')
@@ -59,7 +59,7 @@ for mail_id in data[0].split():
         'queryInput': {
             'text': {
                 'text': parsed_email_body,
-                'languageCode': parsed_email_language
+                'languageCode': parsed_email_lang
             }
         },
         'queryParams': {
