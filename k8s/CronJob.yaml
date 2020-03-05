@@ -24,6 +24,6 @@ spec:
                 value: <your-user-password>
               - name: FALLBACK_LANG
                 value: en
-              - name: GATEWAY
-                value: https://cloud.ushakov.co
+              - name: ENDPOINT
+                value: https://{}.core.ushaflow.com
           restartPolicy: Never

@@ -14,15 +14,15 @@ from langdetect import detect
 from email_reply_parser import EmailReplyParser
 
 # Retrieve environment variables
-username = os.environ['INBOX_USER']
-password = os.environ['INBOX_PASSWORD']
 host = os.environ['INBOX_HOST']
+user = os.environ['INBOX_USER']
+password = os.environ['INBOX_PASSWORD']
 fallback_lang = os.environ['FALLBACK_LANG']
-gateway = os.environ['GATEWAY']
+endpoint = os.environ['ENDPOINT']
 
 # Connect to IMAP and fetch unread messages
 server = imaplib.IMAP4_SSL(host)
-server.login(username, password)
+server.login(user, password)
 server.select('inbox')
 mails, data = server.uid('search', None, 'UNSEEN')
 
@@ -54,7 +54,7 @@ for mail_id in data[0].split():
     logging.info('Subject: ' + parsed_email['Subject'])
     logging.info('Text: ' + parsed_email_body)
 
-    # Build Dialogflow Gateway Request
+    # Build Request
     agent_id = parsed_email_to.split('@')[0]
     req = {
         'session': parsed_email_from,
@@ -77,9 +77,8 @@ for mail_id in data[0].split():
     }
 
     # Make the request
-    baseurl = agent_id + '.gateway.dialogflow.cloud.ushakov.co'
-    agent = requests.get(gateway, headers={'Host': baseurl})
-    r = requests.post(gateway, headers={'Host': baseurl}, json=req)
+    agent = requests.get(endpoint.format(agent_id))
+    r = requests.post(endpoint.format(agent_id), json=req)
     if r.status_code == 200:
         # Make new E-Mail for the response
         message = MIMEMultipart()
@@ -111,7 +110,7 @@ for mail_id in data[0].split():
         session.starttls()
         session.ehlo()
 
-        session.login(username, password)
+        session.login(user, password)
         session.sendmail(parsed_email['To'], parsed_email['From'], message.as_string())
         session.quit()
 
@@ -119,8 +118,8 @@ for mail_id in data[0].split():
         logging.info('E-Mail response sent to ' + parsed_email_from)
     else:
         # Log request error
-        logging.error('Dialogflow Gateway request failed')
-        logging.error('Status: ' + r.status_code)
+        logging.error('Request failed')
+        logging.error('Status: ' + str(r.status_code))
         logging.error('Error: ' + r.json())
 
 # Disconnect
