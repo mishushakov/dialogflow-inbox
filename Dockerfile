@@ -4,7 +4,7 @@ ADD inbox.py .
 ADD requirements.txt .
 
 ENV FALLBACK_LANG en
-ENV ENDPOINT https://{}.core.ushaflow.com
+ENV ENDPOINT https://*.core.ushaflow.io
 
 RUN pip install -r requirements.txt
 

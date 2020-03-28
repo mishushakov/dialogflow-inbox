@@ -16,14 +16,5 @@ spec:
             image: docker.pkg.github.com/mishushakov/dialogflow-inbox/dialogflow-inbox:latest
             imagePullPolicy: IfNotPresent
             env:
-              - name: INBOX_HOST
-                value: <your-mailserver-host>
-              - name: INBOX_USER
-                value: <your-user>
-              - name: INBOX_PASSWORD
-                value: <your-user-password>
-              - name: FALLBACK_LANG
-                value: en
-              - name: ENDPOINT
-                value: https://{}.core.ushaflow.com
+              # see README
           restartPolicy: Never
