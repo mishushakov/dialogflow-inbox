@@ -2,4 +2,4 @@ requests
 langdetect
 flask
 email_reply_parser
-dotenv
+python-dotenv
