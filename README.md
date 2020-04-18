@@ -11,6 +11,7 @@ Dialogflow Inbox operates Dialogflow Agents inside a mail server
 ## Features and Drawbacks
 
 - Automatic language detection
+- Session, thread detection
 - Reply recognition
 - No HTML parsing
 - No component rendering (only text is sent)

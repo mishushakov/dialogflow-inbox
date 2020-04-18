@@ -11,6 +11,7 @@ from email import message_from_string
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import parseaddr, make_msgid
+from hashlib import md5
 from langdetect import detect
 from email_reply_parser import EmailReplyParser
 
@@ -23,31 +24,22 @@ fallback_lang = os.environ.get('FALLBACK_LANG')
 catchall = os.environ.get('CATCHALL')
 endpoint = os.environ.get('ENDPOINT')
 
-# Connect to IMAP
+# Connect to IMAP and fetch unread messages
 server = imaplib.IMAP4_SSL(host)
 server.login(user, password)
-
-# Connect to SMTP
-session = smtplib.SMTP(host, 587)
-session.ehlo()
-session.starttls()
-session.ehlo()
-session.login(user, password)
-
-# Fetch unread messages
 server.select('inbox')
 mails, data = server.uid('search', None, 'UNSEEN')
 
 for mail_id in data[0].split():
     # Fetch each unread E-Mail
     status, data = server.uid('fetch', mail_id, '(RFC822)')
-    raw_email = data[0][1].decode('utf-8')
 
     # Parse E-Mail
-    parsed_email = message_from_string(raw_email)
+    parsed_email = message_from_string(data[0][1].decode('utf-8'))
     parsed_email_from = parseaddr(parsed_email['From'])[1]
     parsed_email_to = parseaddr(parsed_email['To'])[1]
     parsed_email_to_domain = parsed_email_to.split('@')[1]
+    parsed_email_session = md5(bytes(parsed_email.get('Subject', '').replace('Re: ', '') + parsed_email_from, encoding='utf8')).hexdigest()
     parsed_email_body = ''
     for part in parsed_email.walk():
         if part.get_content_type() == 'text/plain':
@@ -61,15 +53,17 @@ for mail_id in data[0].split():
         pass
 
     # Log E-Mail
-    logging.info('Recieved new E-Mail')
+    logging.info('Received new E-Mail')
     logging.info('From: ' + parsed_email_from)
     logging.info('To: ' + parsed_email_to)
     logging.info('Text: ' + parsed_email_body)
+    logging.info('Message ID: ' + parsed_email['Message-ID'])
+    logging.info('Session ID: ' + parsed_email_session)
 
     # Build Request
     agent_id = parsed_email_to.split('@')[0]
     req = {
-        'session': parsed_email_from,
+        'session': parsed_email_session,
         'queryInput': {
             'text': {
                 'text': parsed_email_body,
@@ -97,7 +91,7 @@ for mail_id in data[0].split():
         message['Message-ID'] = make_msgid()
         message['In-Reply-To'] = parsed_email['Message-ID']
         message['References'] = parsed_email['Message-ID']
-        message['From'] = (agent.json()['displayName'] + ' <' + parsed_email_to + '>') or parsed_email['To']
+        message['From'] = agent.json().get('displayName') + ' <' + parsed_email_to + '>' if agent.json().get('displayName') else parsed_email['To']
         message['To'] = parsed_email['From']
         message['Subject'] = parsed_email['Subject']
 
@@ -117,6 +111,11 @@ for mail_id in data[0].split():
                         message.attach(MIMEText(component['simpleResponse']['textToSpeech'], 'plain'))
 
         # Send the E-Mail
+        session = smtplib.SMTP(host, 587)
+        session.ehlo()
+        session.starttls()
+        session.ehlo()
+        session.login(user, password)
         session.sendmail(message['From'], message['To'], message.as_string())
 
         # Log response status
@@ -134,6 +133,11 @@ for mail_id in data[0].split():
         message.attach(MIMEText(parsed_email_body, 'plain'))
 
         # Send the E-Mail
+        session = smtplib.SMTP(host, 587)
+        session.ehlo()
+        session.starttls()
+        session.ehlo()
+        session.login(user, password)
         session.sendmail(message['From'], message['To'], message.as_string())
 
         # Log response status
